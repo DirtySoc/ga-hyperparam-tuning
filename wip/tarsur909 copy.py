@@ -118,43 +118,47 @@ def crossover_uniform(parents, childrenSize):
 
 
 def mutation(crossover, numberOfParameters, selectedParentsStats):
-    minMaxValue = np.zeros((numberOfParameters, 2))
+    print(crossover)
+    print(numberOfParameters)
+    print(selectedParentsStats)
+    
+    #minMaxValue = np.zeros((numberOfParameters, 2))
 
-    minMaxValue[0:] = [0.01, 1.0]
-    minMaxValue[1, :] = [10, 2000]
-    minMaxValue[2, :] = [1, 15]
-    minMaxValue[3, :] = [0, 10.0]
-    minMaxValue[4, :] = [0.01, 10.0]
-    minMaxValue[5, :] = [0.01, 1.0]
-    minMaxValue[6, :] = [0.01, 1.0]
+    #minMaxValue[0:] = [0.01, 1.0]
+    #minMaxValue[1, :] = [10, 2000]
+    #minMaxValue[2, :] = [1, 15]
+    #minMaxValue[3, :] = [0, 10.0]
+    #minMaxValue[4, :] = [0.01, 10.0]
+    #minMaxValue[5, :] = [0.01, 1.0]
+    #minMaxValue[6, :] = [0.01, 1.0]
 
-    mutationValue = 0
-    parameterSelect = np.random.randint(0, 7)
-    mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
+    #mutationValue = 0
+    #parameterSelect = np.random.randint(0, 7)
+    # mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
     # print(parameterSelect)
-    # if parameterSelect == 0:
-    #     mutationValue = round(np.random.uniform(-0.5, 0.5), 2)
-    # if parameterSelect == 1:
-    #     mutationValue = np.random.randint(-200, 200, 1)
-    # if parameterSelect == 2:
-    #     mutationValue = np.random.randint(-5, 5, 1)
-    # if parameterSelect == 3:
-    #     mutationValue = round(np.random.uniform(-5, 5), 2)
-    # if parameterSelect == 4:
-    #     mutationValue = round(np.random.uniform(-2, 2), 2)
-    # if parameterSelect == 5:
-    #     mutationValue = round(np.random.uniform(-0.5, 0.5), 2)
-    # if parameterSelect == 6:
-    #     mutationValue = round(np.random.uniform(-0.5, 0.5), 2)
+    #if parameterSelect == 0:
+    #    mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
+    #if parameterSelect == 1:
+    #    mutationValue = np.random.randint(-200, 200, 1)
+    #if parameterSelect == 2:
+    #    mutationValue = np.random.randint(-5, 5, 1)
+    #if parameterSelect == 3:
+    #    mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
+    #if parameterSelect == 4:
+    #    mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
+    #if parameterSelect == 5:
+    #    mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
+    #if parameterSelect == 6:
+    #    mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
 
-    for idx in range(crossover.shape[0]):
-        crossover[idx, parameterSelect] = crossover[idx,
-                                                    parameterSelect] + mutationValue
-        if(crossover[idx, parameterSelect] > minMaxValue[parameterSelect, 1]):
-            crossover[idx, parameterSelect] = minMaxValue[parameterSelect, 1]
-        if(crossover[idx, parameterSelect] < minMaxValue[parameterSelect, 0]):
-            crossover[idx, parameterSelect] = minMaxValue[parameterSelect, 0]
-    return crossover
+    #for idx in range(crossover.shape[0]):
+    #    crossover[idx, parameterSelect] = crossover[idx,
+    #                                                parameterSelect] + mutationValue
+    #    if(crossover[idx, parameterSelect] > minMaxValue[parameterSelect, 1]):
+    #        crossover[idx, parameterSelect] = minMaxValue[parameterSelect, 1]
+    #    if(crossover[idx, parameterSelect] < minMaxValue[parameterSelect, 0]):
+    #        crossover[idx, parameterSelect] = minMaxValue[parameterSelect, 0]
+    #return crossover
 
 
 # %%
