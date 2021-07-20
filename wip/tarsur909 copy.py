@@ -118,101 +118,47 @@ def crossover_uniform(parents, childrenSize):
 
 
 def mutation(crossover, numberOfParameters, selectedParentsStats):
-    mutation = crossover.tolist()  # The array of array of hyper-parameters
-    mutationPercentage = .25  # Hard coded, the percentage of children to mutate
-    # The total length of the hyper-parameter array is the numberOfParameters
-    # print(crossover)
+    print(crossover)
+    print(numberOfParameters)
+    print(selectedParentsStats)
+    
+    #minMaxValue = np.zeros((numberOfParameters, 2))
 
-    counterLoopMutation = 0
-    for i in mutation:
-        percentageCheck = round(random.random(), 3)
+    #minMaxValue[0:] = [0.01, 1.0]
+    #minMaxValue[1, :] = [10, 2000]
+    #minMaxValue[2, :] = [1, 15]
+    #minMaxValue[3, :] = [0, 10.0]
+    #minMaxValue[4, :] = [0.01, 10.0]
+    #minMaxValue[5, :] = [0.01, 1.0]
+    #minMaxValue[6, :] = [0.01, 1.0]
 
-        if percentageCheck < mutationPercentage:
-            mutation.pop(counterLoopMutation)
-            newHyperparameterArray = []
+    #mutationValue = 0
+    #parameterSelect = np.random.randint(0, 7)
+    # mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
+    # print(parameterSelect)
+    #if parameterSelect == 0:
+    #    mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
+    #if parameterSelect == 1:
+    #    mutationValue = np.random.randint(-200, 200, 1)
+    #if parameterSelect == 2:
+    #    mutationValue = np.random.randint(-5, 5, 1)
+    #if parameterSelect == 3:
+    #    mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
+    #if parameterSelect == 4:
+    #    mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
+    #if parameterSelect == 5:
+    #    mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
+    #if parameterSelect == 6:
+    #    mutationValue = round(np.random.normal(selectedParentsStats['mean'][parameterSelect], selectedParentsStats['sd'][parameterSelect]))
 
-            # Hyper-parameter 0
-            newParameter0 = round(np.random.normal(
-                selectedParentsStats['mean'][0], selectedParentsStats['sd'][0]), 2)
-            if newParameter0 < 0.01:
-                newHyperparameterArray.append(round(0.01, 2))
-            if newParameter0 > 1.00:
-                newHyperparameterArray.append(round(1.00, 2))
-            if newParameter0 <= 1.00 and newParameter0 >= 0.01:
-                newHyperparameterArray.append(newParameter0)
-
-            # Hyper-parameter 1
-            newParameter1 = round(np.random.normal(
-                selectedParentsStats['mean'][1], selectedParentsStats['sd'][1]), 0)
-            if newParameter1 < 10.00:
-                newHyperparameterArray.append(round(10.00, 0))
-            if newParameter1 > 1500:
-                newHyperparameterArray.append(round(1500, 0))
-            if newParameter1 <= 1500 and newParameter1 >= 10.00:
-                newHyperparameterArray.append(newParameter1)
-
-            # Hyper-parameter 2
-            newParameter2 = round(np.random.normal(
-                selectedParentsStats['mean'][2], selectedParentsStats['sd'][2]), 0)
-            if newParameter2 < 1.00:
-                newHyperparameterArray.append(round(1.0, 0))
-            if newParameter2 > 10.00:
-                newHyperparameterArray.append(round(10.0, 0))
-            if newParameter2 <= 10.00 and newParameter2 >= 1.00:
-                newHyperparameterArray.append(newParameter2)
-
-            # Hyper-parameter 3
-            newParameter3 = round(np.random.normal(
-                selectedParentsStats['mean'][3], selectedParentsStats['sd'][3]), 2)
-            if newParameter3 < 0.01:
-                newHyperparameterArray.append(round(.01, 2))
-            if newParameter3 > 10.00:
-                newHyperparameterArray.append(round(10.00, 2))
-            if (newParameter3 >= 0.01) and (newParameter3 <= 10.00):
-                newHyperparameterArray.append(newParameter3)
-
-            # Hyper-parameter 4
-            newParameter4 = round(np.random.normal(
-                selectedParentsStats['mean'][4], selectedParentsStats['sd'][4]), 2)
-            if newParameter4 < 0.01:
-                newHyperparameterArray.append(round(.01, 2))
-            if newParameter4 > 10.00:
-                newHyperparameterArray.append(round(10.00, 2))
-            if (newParameter4 >= 0.01) and (newParameter4 <= 10.00):
-                newHyperparameterArray.append(newParameter4)
-
-            # Hyper-parameter 5
-            newParameter5 = round(np.random.normal(
-                selectedParentsStats['mean'][5], selectedParentsStats['sd'][5]), 2)
-            if newParameter5 < 0.01:
-                newHyperparameterArray.append(round(.01, 2))
-            if newParameter5 > 1.00:
-                newHyperparameterArray.append(round(1.00, 2))
-            if (newParameter5 >= 0.01) and (newParameter5 <= 1.00):
-                newHyperparameterArray.append(newParameter5)
-
-            # Hyper-parameter 6
-            newParameter6 = round(np.random.normal(
-                selectedParentsStats['mean'][6], selectedParentsStats['sd'][6]), 2)
-            if newParameter6 < 0.01:
-                newHyperparameterArray.append(round(.01, 2))
-            if newParameter6 > 1.00:
-                newHyperparameterArray.append(round(1.00, 2))
-            if (newParameter6 >= 0.01) and (newParameter6 <= 1.00):
-                newHyperparameterArray.append(newParameter6)
-
-            mutation.append(newHyperparameterArray)
-            # print(newHyperparameterArray)
-
-        counterLoopMutation = counterLoopMutation + 1
-
-    mutation2 = []
-    for i in range(len(mutation)):
-        mutation2.append(np.array(mutation[i]))
-
-    mutation3 = np.array(mutation2)
-    # print(mutation3)
-    return mutation3
+    #for idx in range(crossover.shape[0]):
+    #    crossover[idx, parameterSelect] = crossover[idx,
+    #                                                parameterSelect] + mutationValue
+    #    if(crossover[idx, parameterSelect] > minMaxValue[parameterSelect, 1]):
+    #        crossover[idx, parameterSelect] = minMaxValue[parameterSelect, 1]
+    #    if(crossover[idx, parameterSelect] < minMaxValue[parameterSelect, 0]):
+    #        crossover[idx, parameterSelect] = minMaxValue[parameterSelect, 0]
+    #return crossover
 
 
 # %%
@@ -255,14 +201,13 @@ for generation in range(numberOfGenerations):
     # feature_statistics['sd'].append(np.std(parents, axis=0))
 
     feature_statistics = {
-        'mean': np.mean(parents, axis=0),
-        'sd': np.std(parents, axis=0)
+      'mean': np.mean(parents, axis=0),
+      'sd': np.std(parents, axis=0)
     }
 
     children = crossover_uniform(parents=parents, childrenSize=(
         populationSize[0] - parents.shape[0], numberOfParameters))
-    children_mutated = mutation(
-        children, numberOfParameters, feature_statistics)
+    children_mutated = mutation(children, numberOfParameters, feature_statistics)
 
     population[0:parents.shape[0], :] = parents
     population[parents.shape[0]:, :] = children_mutated
