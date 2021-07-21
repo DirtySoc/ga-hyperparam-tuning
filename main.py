@@ -4,7 +4,7 @@ import xgboost as xgb
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score, f1_score, classification_report
+from sklearn.metrics import accuracy_score, f1_score, balanced_accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import RandomOverSampler
 
@@ -21,8 +21,10 @@ x_resampled, y_resampled = RandomOverSampler(
     sampling_strategy=0.25, random_state=11).fit_resample(X, y)
 
 # %% Test Train Split
+# X_train, X_test, y_train, y_test = train_test_split(
+#     x_resampled, y_resampled, test_size=0.20, random_state=97)
 X_train, X_test, y_train, y_test = train_test_split(
-    x_resampled, y_resampled, test_size=0.20, random_state=97)
+    X, y, test_size=0.20, random_state=97)
 
 # %%
 model = xgb.XGBClassifier(verbosity=0, use_label_encoder=False)
@@ -65,6 +67,8 @@ def fitness_score(y_true, y_pred, type):
         return round((accuracy_score(y_true, y_pred)), 4)
     if type == 'f1':
         return round((f1_score(y_true, y_pred)), 4)
+    if type == 'bal_acc':
+        return round((balanced_accuracy_score(y_true, y_pred)), 4)
     else:
         return NotImplementedError
 
@@ -72,6 +76,7 @@ def fitness_score(y_true, y_pred, type):
 def train_population(population, dMatrixTrain, dMatrixtest, y_test):
     aScore = []
     f1Score = []
+    balAccScore = []
     for i in range(population.shape[0]):
         param = {'objective': 'binary:logistic',
                  'learning_rate': population[i][0],
@@ -82,13 +87,14 @@ def train_population(population, dMatrixTrain, dMatrixtest, y_test):
                  'subsample': population[i][5],
                  'colsample_bytree': population[i][6],
                  'seed': 24}
-        num_round = 100
+        num_round = 5
         xgbT = xgb.train(param, dMatrixTrain, num_round)
         preds = xgbT.predict(dMatrixtest)
         preds = preds > 0.5
         aScore.append(fitness_score(y_test, preds, 'acc'))
         f1Score.append(fitness_score(y_test, preds, 'f1'))
-    return [aScore, f1Score]
+        balAccScore.append(fitness_score(y_test, preds, 'bal_acc'))
+    return [aScore, f1Score, balAccScore]
 
 
 def new_parents_selection(population, fitness, numParents):
@@ -215,17 +221,70 @@ def mutation(crossover, selectedParentsStats, mu=0.25):
     mutation3 = np.array(mutation2)
     return mutation3
 
+# %% Basline mutation model
+def mutation_base(crossover, selectedParentsStat, mu=0.25):
+    mutation = crossover.tolist() #The array of array of hyper-parameters
+    #The total length of the hyper-parameter array is the numberOfParameters
+
+    counterLoopMutation = 0
+    for i in mutation:
+        percentageCheck = round(random.random(),3)
+        
+        if percentageCheck < mu:
+            mutation.pop(counterLoopMutation)
+            newHyperparameterArray = []
+            
+            #Hyper-parameter 0
+            newParameter0 = round(random.uniform(0.01, 1), 2)
+            newHyperparameterArray.append(newParameter0)
+
+            #Hyper-parameter 1
+            newParameter1 = random.randrange(10, 1500, step=25)
+            newHyperparameterArray.append(newParameter1)
+            
+            #Hyper-parameter 2
+            newParameter2 = int(random.randrange(1, 10, step=1))
+            newHyperparameterArray.append(newParameter2)
+
+            #Hyper-parameter 3
+            newParameter3 = round(random.uniform(0.01, 10.0), 2)
+            newHyperparameterArray.append(newParameter3)
+            
+            #Hyper-parameter 4
+            newParameter4 = round(random.uniform(0.01, 10.0), 2)
+            newHyperparameterArray.append(newParameter4)
+            
+            #Hyper-parameter 5
+            newParameter5 = round(random.uniform(0.01, 1.0), 2)
+            newHyperparameterArray.append(newParameter5)
+            
+            #Hyper-parameter 6
+            newParameter6 = round(random.uniform(0.01, 1.0), 2)
+            newHyperparameterArray.append(newParameter6)
+            
+            mutation.append(newHyperparameterArray)
+ 
+
+        counterLoopMutation = counterLoopMutation + 1
+    
+    mutation2 = []
+    for i in range(len(mutation)): 
+        mutation2.append(np.array(mutation[i]))
+    
+    mutation3 = np.array(mutation2)
+
+    return mutation3
 
 # %% Main GA Loop
 
-def start_ga(n_parents=64, n_parents_mating=32, n_params=7, n_gens=5, mu=0.25):
+def start_ga(n_parents=64, n_parents_mating=32, n_params=7, n_gens=5, mu_func=mutation, mu=0.25):
     xgDMatrix = xgb.DMatrix(X_train, y_train)
     xgbDMatrixTest = xgb.DMatrix(X_test, y_test)
 
     populationSize = (n_parents, n_params)
     population = initilialize_poplulation(n_parents)
     # fitnessHistory = np.empty([numberOfGenerations+1, 2, numberOfParents])
-    fitnessHistory = np.empty([n_gens, 2, n_parents])
+    fitnessHistory = np.empty([n_gens, 3, n_parents])
     populationHistory = np.empty(
         [(n_gens+1)*n_parents, n_params])
     populationHistory[0:n_parents, :] = population
@@ -237,11 +296,14 @@ def start_ga(n_parents=64, n_parents_mating=32, n_params=7, n_gens=5, mu=0.25):
             population=population, dMatrixTrain=xgDMatrix, dMatrixtest=xgbDMatrixTest, y_test=y_test)
         fitnessHistory[generation, 0, :] = fitness_vals[0]  # Accuracy
         fitnessHistory[generation, 1, :] = fitness_vals[1]  # F1 Score
+        fitnessHistory[generation, 2, :] = fitness_vals[2]  # F1 Score
 
-        print('Best ACC score in this generation = {}'.format(
+        print('Best Acc score in this generation = {}'.format(
             np.max(fitnessHistory[generation, 0, :])))
         print('Best F1 score in this generation = {}'.format(
             np.max(fitnessHistory[generation, 1, :])))
+        print('Best Bal Acc score in this generation = {}'.format(
+            np.max(fitnessHistory[generation, 2, :])))
 
         parents = new_parents_selection(
             population=population, fitness=fitness_vals[1], numParents=n_parents_mating)
@@ -253,7 +315,7 @@ def start_ga(n_parents=64, n_parents_mating=32, n_params=7, n_gens=5, mu=0.25):
 
         children = crossover_uniform(parents=parents, childrenSize=(
             populationSize[0] - parents.shape[0], n_params))
-        children_mutated = mutation(
+        children_mutated = mu_func(
             children, feature_statistics, mu)
 
         population[0:parents.shape[0], :] = parents
@@ -323,6 +385,10 @@ def in_notebook():
 #     print("------")
 #     start_ga(n_parents=64, n_parents_mating=32, n_params=7, n_gens=25, mu=mu)
 #     print("\n\n")
-start_ga(n_parents=64, n_parents_mating=32, n_params=7, n_gens=5, mu=0.25)
+n_gens=5
+print("OUR MUTATION FUNC")
+start_ga(n_parents=64, n_parents_mating=32, n_params=7, n_gens=n_gens, mu=0.25)
+print("BASELINE MUTATION FUNC")
+start_ga(n_parents=64, n_parents_mating=32, n_params=7, n_gens=n_gens, mu=0.25, mu_func=mutation_base)
 
 # %%
